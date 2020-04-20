@@ -1,0 +1,53 @@
+{% extends 'bootstrap/base.html' %}
+
+{% set navigation_bar = [
+('/', 'index', 'Home'),
+('/sensors', 'sensors', 'Logging')
+] -%}
+
+{% set active_page = active_page|default('index') -%}
+
+{% block navbar %}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('index') }}" style = "color : #e95809;" class="d-inline-block align-top">
+                <img src="./static/fridge.svg" style="width:4vh; height:4vh">
+            </a>
+            <a class="navbar-brand" href="{{ url_for('index') }}" style = "color : #e95809; font-size:40px" class="d-inline-block align-top">
+                Smart Pharmacy Fridge
+            </a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="nav navbar-nav" id="navigation">
+                {% for href, id, caption in navigation_bar %}
+                <li
+                    {% if id == active_page %}
+                        class="active"
+                    {% endif %}
+                >
+                    <a href="{{ href|e }}" style="padding:2vh">{{ caption|e }}
+                        {% if id == active_page %}
+                        <span class="sr-only">(current)</span>
+                        {% endif %}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div>
+</nav>
+{% endblock %}
+
+

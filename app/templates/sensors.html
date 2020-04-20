@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% set active_page = "sensors" %}
+{% block content %}
+<div class="container">
+    {% for sensor in sensor_data %}
+    <div class="table-responsive">
+        <table class="table">
+            <h2>{{sensor}} logs</h2>
+            <thead>
+                <tr>
+                    <th scope="col">Date Logged</th>
+                    <th scope="col">Value Logged</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reading in sensor_data[sensor] %}
+                    <tr>
+                        <th scope="row">{{loop.index}}</th>
+                        <td>{{reading[2]}}</td>
+                        <td>{{reading[3]}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
