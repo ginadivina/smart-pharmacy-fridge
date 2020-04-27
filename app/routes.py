@@ -1,11 +1,12 @@
 from flask import redirect, render_template
 from app import app
-from app.database import get_sensors
+from app.database import get_sensors, get_medicine_stock
 
 
 @app.route('/')
 def index():
-    return render_template('base.html')
+    data = get_medicine_stock()
+    return render_template('base.html', medicine_stock_data=data)
 
 
 @app.route('/sensors')

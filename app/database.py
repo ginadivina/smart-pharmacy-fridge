@@ -38,5 +38,18 @@ def get_sensors():
         return e
 
 
+def get_medicine_stock():
+    try:
+        db = create_connection()
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM medicine_stock LEFT JOIN medicine_types on medicine_stock.medicine_type_id=medicine_types.id")
+        data = cursor.fetchall()  # Retrieve all results
+
+        return data
+
+    except Exception as e:
+        print(e)
+        return e
+
 
 
