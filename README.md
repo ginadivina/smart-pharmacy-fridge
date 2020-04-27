@@ -20,7 +20,9 @@ Install Python dependencies:
 Start app:
 `flask run`
 
-Leave virtual environment:
+Once you make code changes you will need to `ctrl+c` and `flask run` again to show changes
+
+Leave virtual environment (once you're finished working):
 `deactivate`
 
 The db.db file can be explored with a DB explorer such as: <https://sqlitebrowser.org/>
