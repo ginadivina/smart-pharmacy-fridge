@@ -22,6 +22,8 @@ Start app:
 
 Once you make code changes you will need to `ctrl+c` and `flask run` again to show changes
 
+If data is changed in the DB - export the tables into `app/exported_db_tables` so changes can be merged and re-exported into db.db.
+
 Leave virtual environment (once you're finished working):
 `deactivate`
 
