@@ -1,2 +1,4 @@
 id,name,measurement_type
-895d5a96-a3ae-4f1a-b848-463d42d4a9c4,temperature,celsius
+0,Temperature,celsius
+1,Pressure,
+2,Humidity,
