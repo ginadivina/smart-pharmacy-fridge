@@ -46,6 +46,22 @@ def get_medicine_stock():
         data = cursor.fetchall()  # Retrieve all results
 
         return data
+    
+    except Exception as e:
+        print(e)
+        return e
+
+
+
+def write_sensor_log(sensor_type_id, datetime, value):
+    try:
+        db = create_connection()
+        cursor = db.cursor()
+        cursor.execute("INSERT INTO sensor_log (sensor_type_id, datetime, value) VALUES (?, ?, ?)", (sensor_type_id, datetime, value))
+        db.commit()
+
+        return
+        
 
     except Exception as e:
         print(e)
