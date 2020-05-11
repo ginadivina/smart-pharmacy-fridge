@@ -68,10 +68,10 @@
                         </thead>
                         <tbody>
                         {% for medicine in medicine_stock_data %}
-                        <tr>
-                            <td>{{medicine[4]}}</td>
-                            <td>{{medicine[2]}}</td>
-                        </tr>
+                            <tr>
+                                <td>{{medicine[4]}}</td>
+                                <td>{{medicine[2]}}</td>
+                            </tr>
                         {% endfor %}
                         </tbody>
                     </table>
@@ -79,8 +79,24 @@
             </div>
             <div class="col-md-6">
                 <img src="static/live_fridge.PNG" style="position: relative; left: 0; top: 0;">
-                <img src="static/amoxicillin.PNG" style="position: absolute; left: 30px; top: 50px; width: 150px; height: 100px;">
-                <img src="static/humira.PNG" style="position: absolute; left: 200px; top: 20px; width: 60px; height: 130px;">
+                {% if medicine_dict['Amoxicillin'] and medicine_dict['Amoxicillin'] > 0 %}
+                    <img src="static/Amoxicillin.PNG" style="position: absolute; left: 30px; top: 50px; width: 150px; height: 100px;">
+                {% endif %}
+                {% if medicine_dict['Humiera'] and medicine_dict['Humiera'] > 0 %}
+                    <img src="static/humira.PNG" style="position: absolute; left: 200px; top: 20px; width: 60px; height: 130px;">
+                {% endif %}
+                {% if medicine_dict['Atgam'] and medicine_dict['Atgam'] > 0 %}
+                    <img src="static/atgam.PNG" style="position: absolute; left: 300px; top: 50px; width: 150px; height: 100px;">
+                {% endif %}
+                {% if medicine_dict['Azasite'] and medicine_dict['Azasite'] > 0 %}
+                    <img src="static/azasite.PNG" style="position: absolute; left: 470px; top: 50px; width: 65px; height: 100px;">
+                {% endif %}
+                {% if medicine_dict['Benzamycin'] and medicine_dict['Benzamycin'] > 0 %}
+                    <img src="static/Benzamycin.PNG" style="position: absolute; left: 60px; top: 240px; width: 70px; height: 100px;">
+                {% endif %}
+                {% if medicine_dict['Emcyt'] and medicine_dict['Emcyt'] > 0 %}
+                <img src="static/emcyt.PNG" style="position: absolute; left: 150px; top: 240px; width: 150px; height: 80px;">
+                {% endif %}
             </div>
         </div>
     </div>
