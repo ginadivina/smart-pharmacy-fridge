@@ -2,7 +2,8 @@
 
 {% set navigation_bar = [
 ('/', 'index', 'Home'),
-('/sensors', 'sensors', 'Logging')
+('/sensors', 'sensors', 'Logging'),
+('/report', 'report', 'Reporting')
 ] -%}
 
 {% set active_page = active_page|default('index') -%}
@@ -82,10 +83,6 @@
                 <img src="static/humira.PNG" style="position: absolute; left: 200px; top: 20px; width: 60px; height: 130px;">
             </div>
         </div>
-
-
-
-
     </div>
 </div>
 {% endblock %}
