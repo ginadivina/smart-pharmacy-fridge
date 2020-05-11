@@ -1,15 +1,16 @@
 {% extends "base.html" %}
 {% set active_page = "sensors" %}
 {% block content %}
+
 <div class="container">
     {% for sensor in sensor_data %}
-    <div class="table-responsive">
-        <table class="table">
-            <h2>{{sensor}} logs</h2>
+    <h2>{{sensor}} logs</h2>
+    <div class="tableFixHead">
+        <table class="table table-hover">
             <thead>
                 <tr>
-                    <th scope="col">Date Logged</th>
-                    <th scope="col">Value Logged</th>
+                    <th scope="col" style="background-color: white;">Date Logged</th>
+                    <th scope="col" style="background-color: white;">Value Logged</th>
                 </tr>
             </thead>
             <tbody>

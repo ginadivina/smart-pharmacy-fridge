@@ -14,18 +14,13 @@ def report():
     tempData = data['Temperature']
     lowTempList = []
     highTempList = []
- 
-    i = 0
-    for x in tempData:
-        if tempData[i][3] == "20":  #placeholder temperature for testing, change to: if tempData[i][3] < "2":
-            lowTempList.append(data['Temperature'][i])
-            i = i + 1
-        elif tempData[i][3] == "20.1":  #placeholder temperature for testing, change to: if tempData[i][3] > "8":
-            highTempList.append(data['Temperature'][i])
-            i = i + 1
-        else:
-            i = i + 1
-            #No temperature discrepancies
+
+    for index, reading in enumerate(tempData):
+        if reading[3] == "20":  #placeholder temperature for testing, change to: if tempData[i][3] < "2":
+            lowTempList.append(data['Temperature'][index])
+        elif reading[3] == "20.1":  #placeholder temperature for testing, change to: if tempData[i][3] > "8":
+            highTempList.append(data['Temperature'][index])
+
 
     tempDict = {'Low Temperature Alerts': lowTempList, 'High Temperature Alerts': highTempList}
     return render_template('report.html', sensor_data=tempDict)

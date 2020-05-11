@@ -1,0 +1,9 @@
+/*Styling for tables to have a sticky header*/
+.tableFixHead {
+    overflow-y: auto;
+    height: 300px;
+}
+.tableFixHead thead th {
+    position: sticky;
+    top: 0;
+}
