@@ -6,7 +6,11 @@ from app.database import get_sensors, get_medicine_stock, write_sensor_log
 @app.route('/')
 def index():
     data = get_medicine_stock()
-    return render_template('base.html', medicine_stock_data=data)
+    medicine_dict = {}
+    for medicine in data:
+        medicine_dict[medicine[4]] = int(medicine[2])
+    print(medicine_dict)
+    return render_template('base.html', medicine_stock_data=data, medicine_dict=medicine_dict)
 
 
 @app.route('/report')

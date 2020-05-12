@@ -30,6 +30,7 @@ def get_sensors():
             cursor.execute("SELECT * FROM sensor_log WHERE sensor_type_id = ?", (sensor[0],))
             sensor_data = cursor.fetchall()  # Retrieve all results
             data[sensor[1]] = sensor_data
+
         return data
 
     except Exception as e:
@@ -43,11 +44,13 @@ def get_medicine_stock():
         cursor = db.cursor()
         cursor.execute("SELECT * FROM medicine_stock LEFT JOIN medicine_types on medicine_stock.medicine_type_id=medicine_types.id")
         data = cursor.fetchall()  # Retrieve all results
+
         return data
     
     except Exception as e:
         print(e)
         return e
+
 
 
 def write_sensor_log(sensor_type_id, datetime, value):
@@ -56,7 +59,9 @@ def write_sensor_log(sensor_type_id, datetime, value):
         cursor = db.cursor()
         cursor.execute("INSERT INTO sensor_log (sensor_type_id, datetime, value) VALUES (?, ?, ?)", (sensor_type_id, datetime, value))
         db.commit()
+
         return
+        
 
     except Exception as e:
         print(e)
