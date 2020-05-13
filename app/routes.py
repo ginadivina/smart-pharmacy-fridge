@@ -2,6 +2,9 @@ from flask import redirect, render_template, request, jsonify
 from app import app
 from app.database import get_sensors, get_medicine_stock, write_sensor_log
 
+import requests
+
+fridge_port_number = None
 
 @app.route('/')
 def index():
@@ -48,6 +51,22 @@ def write_sensors():
     data = get_sensors()
     return render_template('sensors.html', sensor_data=data)
 
+@app.route('/api/newClient')
+def newClient():
+    global fridge_port_number
+    requestData = request.json
+    fridge_port_number = requestData['port']
+    return 'Fridge connected to server'
+
+@app.route('/auth')
+def triggerAuth():
+    global fridge_port_number
+    url = 'http://127.0.0.1:' + str(fridge_port_number)
+    headers = {'Content-type': 'text/html; charset=UTF-8'}
+    #See if it would be possible to redirect to a processing page during this time
+    response = requests.post(url, data="login", headers=headers)
+    print(response.text)
+    return redirect('sensors')
 
 @app.errorhandler(404)
 def page_not_found(e):
