@@ -1,5 +1,6 @@
 import sqlite3
 import os.path
+import numpy as np
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 db_file = os.path.join(BASE_DIR, "db.db")
@@ -59,13 +60,44 @@ def write_sensor_log(sensor_type_id, datetime, value):
         cursor = db.cursor()
         cursor.execute("INSERT INTO sensor_log (sensor_type_id, datetime, value) VALUES (?, ?, ?)", (sensor_type_id, datetime, value))
         db.commit()
-
-        return
-        
+        return cursor.lastrowid       
 
     except Exception as e:
         print(e)
         return e
 
 
+def get_users():
+    try:
+        db = create_connection()
+        cursor = db.cursor()
+        cursor.execute("SELECT user_id, name FROM users")
+        data = cursor.fetchall()
+        return data
+    except Exception as e:
+        print(e)
+        return e
 
+def write_users(name, filename):
+    try:
+        db = create_connection()
+        cursor = db.cursor()
+        cursor.execute("INSERT INTO users (name, photo_path) VALUES (?, ?)", (name, filename))
+        db.commit()
+        return cursor.lastrowid
+    except Exception as e:
+        print(e)
+        return e
+
+def write_user_encoding(ID, encodings):
+    try:
+        row = list(encodings)
+        row.insert(0,ID)
+        db = create_connection()
+        cursor = db.cursor()
+        cursor.execute("INSERT INTO user_id_encoding VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (row))
+        db.commit()
+        return
+    except Exception as e:
+        print(e)
+        return e

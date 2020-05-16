@@ -1,7 +1,11 @@
 from flask import redirect, render_template, request, jsonify
 from app import app
-from app.database import get_sensors, get_medicine_stock, write_sensor_log
+from app.database import get_sensors, get_medicine_stock, write_sensor_log, get_users, write_users, write_user_encoding
+from app.forms import newUserForm
+from werkzeug.utils import secure_filename
+import face_recognition
 
+import os
 import requests
 
 fridge_port_number = None
@@ -68,6 +72,36 @@ def triggerAuth():
     print(response.text)
     return redirect('sensors')
 
+#This route should provide all the administrative information and transactions
+#currently only providing users (of which we have none lol!)
+@app.route('/admin', methods = ['GET', 'POST'])
+def userAdmin():
+    form = newUserForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        file = request.files['file']
+        filename = secure_filename(file.filename)
+        thisDir = os.path.dirname(__file__)
+        file.save(os.path.join(thisDir, 'user_photos', filename))
+        userID = write_users(name, filename)
+        faceEncoding = encodePhoto(filename)
+        write_user_encoding(userID, faceEncoding)
+
+        form = newUserForm()
+    data = get_users()
+    return render_template('admin.html', form = form, data = data)
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
+
+################################
+# Helper functions
+################################
+
+def encodePhoto(filename):
+    thisDir = os.path.dirname(__file__)
+    image = face_recognition.load_image_file(os.path.join(thisDir,'user_photos', filename))
+    imageEncodings = face_recognition.face_encodings(image)[0]
+    return imageEncodings

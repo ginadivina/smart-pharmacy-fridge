@@ -12,3 +12,4 @@ face-recognition==1.3.0
 dlib==19.19.0
 opencv-python==4.2.0.34
 requests==2.21.0
+flash-wtf==0.14.3
