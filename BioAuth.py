@@ -29,7 +29,7 @@ class handler(socketserver.BaseRequestHandler):
         authorising = True
         while not authorised:
             sleep(1)
-        self.request.sendall(('HTTP/1.1 200 \r\n\r\n"encoding":[' + ', '.join([str(elem) for elem in encodedFace])+']').encode())
+        self.request.sendall(('HTTP/1.1 200 \r\n\r\n{"encoding":[' + ', '.join([str(elem) for elem in encodedFace])+']}').encode())
 
 
 

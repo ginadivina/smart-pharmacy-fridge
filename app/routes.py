@@ -1,12 +1,14 @@
 from flask import redirect, render_template, request, jsonify
 from app import app
-from app.database import get_sensors, get_medicine_stock, write_sensor_log, get_users, write_users, write_user_encoding
+from app.database import get_sensors, get_medicine_stock, write_sensor_log, get_user, get_users, write_users, write_user_encoding, get_user_encodings
 from app.forms import newUserForm
 from werkzeug.utils import secure_filename
 import face_recognition
 
 import os
 import requests
+import json
+import numpy as np
 
 fridge_port_number = None
 
@@ -16,7 +18,6 @@ def index():
     medicine_dict = {}
     for medicine in data:
         medicine_dict[medicine[4]] = int(medicine[2])
-    print(medicine_dict)
     return render_template('base.html', medicine_stock_data=data, medicine_dict=medicine_dict)
 
 
@@ -69,8 +70,25 @@ def triggerAuth():
     headers = {'Content-type': 'text/html; charset=UTF-8'}
     #See if it would be possible to redirect to a processing page during this time
     response = requests.post(url, data="login", headers=headers)
-    print(response.text)
-    return redirect('sensors')
+    response_dict = json.loads(response.text)
+    encoding = response_dict["encoding"]
+    knownEncodings = get_user_encodings()
+    authorisedUser = checkForMatch(encoding, knownEncodings)
+
+    
+    #just getting the rest of the stuff needed for the paht
+    data = get_medicine_stock()
+    medicine_dict = {}
+    for medicine in data:
+        medicine_dict[medicine[4]] = int(medicine[2])
+
+
+    if authorisedUser is None:
+        return render_template('base.html', medicine_stock_data=data, medicine_dict=medicine_dict, authorisedUser = "None")
+
+    #get the name and the file path of the user's photo
+    authorisedUser = get_user(authorisedUser)
+    return render_template('base.html', medicine_stock_data=data, medicine_dict=medicine_dict, authorisedUser = authorisedUser[0][0], photo = authorisedUser[0][1])
 
 #This route should provide all the administrative information and transactions
 #currently only providing users (of which we have none lol!)
@@ -82,7 +100,7 @@ def userAdmin():
         file = request.files['file']
         filename = secure_filename(file.filename)
         thisDir = os.path.dirname(__file__)
-        file.save(os.path.join(thisDir, 'user_photos', filename))
+        file.save(os.path.join(thisDir, 'static','user_photos', filename))
         userID = write_users(name, filename)
         faceEncoding = encodePhoto(filename)
         write_user_encoding(userID, faceEncoding)
@@ -105,3 +123,21 @@ def encodePhoto(filename):
     image = face_recognition.load_image_file(os.path.join(thisDir,'user_photos', filename))
     imageEncodings = face_recognition.face_encodings(image)[0]
     return imageEncodings
+
+def checkForMatch(faceEncoding, knownEncodings):
+    #knownEncodings is a list of tuples, with the User ID followed by the encoding.
+    #We need to convert to a list of lists, extracting the User ID
+    encodingList = []
+    UIDs = []
+    for encoding in knownEncodings:
+        encoding = list(encoding)
+        userID = encoding.pop(0)
+        encoding = np.array(encoding)
+        encodingList.append(encoding)
+        UIDs.append(userID)
+    #compare the faces
+    matchedFaces = face_recognition.compare_faces(encodingList, np.array(faceEncoding))
+    if True in matchedFaces:
+        index = matchedFaces.index(True)
+        return UIDs[index]
+    return None
