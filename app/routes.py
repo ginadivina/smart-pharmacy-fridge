@@ -19,7 +19,7 @@ def index():
     medicine_dict = {}
     for medicine in data:
         medicine_dict[medicine[4]] = int(medicine[2])
-    return render_template('base.html', medicine_stock_data=data, medicine_dict=medicine_dict, fridge_border="4px solid orangered")
+    return render_template('index.html', medicine_stock_data=data, medicine_dict=medicine_dict, fridge_border="4px solid orangered")
 
 
 @app.route('/report')
@@ -85,16 +85,16 @@ def triggerAuth():
         authorisedUser = checkForMatch(encoding, knownEncodings)
 
         if authorisedUser is None:
-            return render_template('base.html', medicine_stock_data=data, medicine_dict=medicine_dict,
+            return render_template('index.html', medicine_stock_data=data, medicine_dict=medicine_dict,
                                    authorisedUser=None, fridge_border="4px solid orangered")
 
         # get the name and the file path of the user's photo
         authorisedUser = get_user(authorisedUser)
-        return render_template('base.html', medicine_stock_data=data, medicine_dict=medicine_dict,
+        return render_template('index.html', medicine_stock_data=data, medicine_dict=medicine_dict,
                                authorisedUser=authorisedUser[0][0], photo=authorisedUser[0][1],
                                fridge_border="4px solid green")
     except Exception as error:
-        return render_template('base.html', medicine_stock_data=data, medicine_dict=medicine_dict,
+        return render_template('index.html', medicine_stock_data=data, medicine_dict=medicine_dict,
                                authorisedUser=None, fridge_border="4px solid orangered")
 
 
