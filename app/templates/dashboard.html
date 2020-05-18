@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% set active_page = "dashboard" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <canvas id="sensors"></canvas>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+            <!--suppress JSUnresolvedLibraryURL -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+            <!--suppress JSUnresolvedLibraryURL -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+            <script>
+                // Create a chart for each sensor
+                sensor_data_json = ({{sensor_data | tojson}}) // Use our data from the API
+                sensors = ["Humidity", "Pressure", "Temperature"]; // Configure sensors to graph here
+                colors = ["orangered", "#FFBE0B", "#3A86FF"];  // Configure our colour palette
+                context = document.getElementById("sensors").getContext('2d');
+                chart_data = [];
+                for (let i = 0; i < sensors.length; i++) {
+                    let sensor_chart_data = {
+                        label: sensors[i],
+                        borderColor: '',
+                        data: []
+                    };
+                    console.log(sensor_data_json[i])
+                    for (let x = 0; x < sensor_data_json[sensors[i]].length; x++) {
+                        let value = sensor_data_json[sensors[i]][x][3];
+                        let date = new Date(sensor_data_json[sensors[i]][x][2]);
+                        sensor_chart_data.data.push({
+                            x: (date.toLocaleString()), y: value
+                        });
+                        if (x === sensor_data_json[sensors[i]].length - 1) {
+                            sensor_chart_data.borderColor = colors[i];
+                            chart_data.push(sensor_chart_data)
+                        }
+                    }
+                }
+
+                new Chart(context, {
+                    // The type of chart we want to create
+                    type: 'line',
+                    data: {
+                        datasets: chart_data
+                    },
+                    // Configuration options go here
+                    options: {    scales: {
+                            xAxes: [{
+                                type: 'time'
+                            }]
+                        }}
+                });
+            </script>
+        </div>
+        <!--<div class="tableFixHead col-md-4">-->
+            <!--<table class="table table-hover">-->
+                <!--<thead>-->
+                    <!--<tr>-->
+                        <!--<th scope="col" style="background-color: white;">Date Logged</th>-->
+                        <!--<th scope="col" style="background-color: white;">Value Logged</th>-->
+                    <!--</tr>-->
+                <!--</thead>-->
+                <!--<tbody>-->
+                    <!--{% for reading in sensor_data[sensor] %}-->
+                        <!--<tr>-->
+                            <!--<td>{{reading[2]}}</td>-->
+                            <!--<td>{{reading[3]}}</td>-->
+                        <!--</tr>-->
+                    <!--{% endfor %}-->
+                <!--</tbody>-->
+            <!--</table>-->
+        <!--</div>-->
+    </div>
+</div>
+
+
+{% endblock %}

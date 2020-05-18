@@ -39,10 +39,10 @@ def report():
     return render_template('report.html', sensor_data=temp_dict)
 
 
-@app.route('/sensors')
-def sensors():
+@app.route('/dashboard')
+def dashboard():
     data = get_sensors()
-    return render_template('sensors.html', sensor_data=data)
+    return render_template('dashboard.html', sensor_data=data)
 
 
 @app.route('/api/sensor', methods=['POST'])
@@ -56,7 +56,7 @@ def write_sensors():
     write_sensor_log(sensor_type_id, datetime, value)
 
     data = get_sensors()
-    return render_template('sensors.html', sensor_data=data)
+    return render_template('dashboard.html', sensor_data=data)
 
 
 @app.route('/api/newClient')
