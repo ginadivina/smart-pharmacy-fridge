@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% set active_page = "index" %}
+{% block content %}
+<div class="panel panel-default" style="position: relative; left: 5vw; top: 2vh; width: 1230px; margin: auto;">
+    <div class="panel-body">
+        <h3 style="font-weight: 700; color: orangered">Live View</h3>
+        <div class="row">
+            <div class="col-md-6">
+                {% if authorisedUser %}
+                {% else %}
+                    <a class="btn" href="{{ url_for('triggerAuth') }}" style="background-color: orangered; color: white;" role="button">Unlock fridge</a>
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                {% if authorisedUser %}
+                    <p>Smart Pharmacy Fridge opened by {{ authorisedUser }}</p>
+                    <img src="{{ url_for('static', filename='user_photos/' + photo) }}" style="height: 130px;">
+                {% endif %}
+                {% if authorisedUser == None %}
+                <div class="alert alert-danger" role="alert">
+                    Unsuccessful login attempt detected!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="table-responsive">
+                    <table class="table">
+                        <h2>Current Medicine Stock</h2>
+                        <thead>
+                        <tr>
+                            <th scope="col">Medicine</th>
+                            <th scope="col"># In Stock</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                            {% if authorisedUser %}
+                                <form action="{{ url_for('update_medicine_stock', authorisedUserId=authorisedUserId) }}" method="post" role="form">
+                                    {% for medicine in medicine_stock_data %}
+                                        <tr>
+                                            <td><input type="text" class="form-control" readonly="true" value={{medicine[4]}}></td>
+                                            <td>
+                                                <input type="number" class="form-control" name={{medicine[1]}} value={{medicine[2]}} required>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    <button type="submit" class="btn btn-success">Submit</button>
+                                </form>
+                            {% else %}
+                                {% for medicine in medicine_stock_data %}
+                                    <tr>
+                                        <td>{{medicine[4]}}</td>
+                                        <td>{{medicine[2]}}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <img src="{{ url_for('static', filename='live_fridge.PNG') }}" style="position: relative; left: 0; top: 0; border: {{fridge_border}};">
+                {% if medicine_dict['Amoxicillin'] and medicine_dict['Amoxicillin'] > 0 %}
+                <img src="{{ url_for('static', filename='Amoxicillin.PNG') }}" style="position: absolute; left: 30px; top: 50px; width: 150px; height: 100px;">
+                {% endif %}
+                {% if medicine_dict['Humiera'] and medicine_dict['Humiera'] > 0 %}
+                <img src="{{ url_for('static', filename='humira.PNG') }}" style="position: absolute; left: 200px; top: 20px; width: 60px; height: 130px;">
+                {% endif %}
+                {% if medicine_dict['Atgam'] and medicine_dict['Atgam'] > 0 %}
+                <img src="{{ url_for('static', filename='atgam.PNG') }}" style="position: absolute; left: 300px; top: 50px; width: 150px; height: 100px;">
+                {% endif %}
+                {% if medicine_dict['Azasite'] and medicine_dict['Azasite'] > 0 %}
+                <img src="{{ url_for('static', filename='azasite.PNG') }}" style="position: absolute; left: 470px; top: 50px; width: 65px; height: 100px;">
+                {% endif %}
+                {% if medicine_dict['Benzamycin'] and medicine_dict['Benzamycin'] > 0 %}
+                <img src="{{ url_for('static', filename='Benzamycin.PNG') }}" style="position: absolute; left: 60px; top: 240px; width: 70px; height: 100px;">
+                {% endif %}
+                {% if medicine_dict['Emcyt'] and medicine_dict['Emcyt'] > 0 %}
+                <img src="{{ url_for('static', filename='emcyt.PNG') }}" style="position: absolute; left: 150px; top: 240px; width: 150px; height: 80px;">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

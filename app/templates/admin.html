@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% set active_page = "admin" %}
+{% block content %}
+<div class="container">
+    <div class="table-responsive">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+            Add user
+        </button>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">User ID</th>
+                    <th scope="col">Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in data %}
+                    <tr>
+                        <td>{{user[0]}}</td>
+                        <td>{{user[1]}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal" tabindex="-1" id="exampleModal" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New user</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="" enctype="multipart/form-data" method="post">
+            <div class="form-group">
+                <label for="name">Name</label>
+                {{ form.name }}
+            </div>
+            <div class="form-group">
+                <label for="photoUpload">User photo</label>
+                {{ form.file }}
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            {{ form.csrf_token }}
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
