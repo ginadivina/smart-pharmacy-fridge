@@ -24,7 +24,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="{{ url_for('index') }}" style = "color : #e95809;" class="d-inline-block align-top">
-                <img src="./static/fridge.svg" style="width:4vh; height:4vh">
+                <img src="{{ url_for('static', filename='fridge.svg') }}" style="width:4vh; height:4vh">
             </a>
             <a class="navbar-brand" href="{{ url_for('index') }}" style = "color : #e95809; font-size:40px" class="d-inline-block align-top">
                 Smart Pharmacy Fridge

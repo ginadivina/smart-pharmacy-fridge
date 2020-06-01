@@ -1,6 +1,8 @@
 import sqlite3
 import os.path
 import numpy as np
+import uuid
+import datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 db_file = os.path.join(BASE_DIR, "db.db")
@@ -52,6 +54,30 @@ def get_medicine_stock():
         print(e)
         return e
 
+def update_medicine_log(authorisedUserId, medicine_type_id, new_stock):
+    try:
+        log_id = str(uuid.uuid4())
+        log_datetime = datetime.datetime.now()
+        db = create_connection()
+        cursor = db.cursor()
+
+        cursor.execute("SELECT value FROM medicine_stock where medicine_type_id=?", (medicine_type_id,))
+        current_stock = cursor.fetchall()  # Retrieve all results
+        change_in_stock = int(new_stock) - int(current_stock[0][0])
+        if change_in_stock == 0:
+            return
+            
+        # Add a new medicine_log entry
+        cursor.execute("INSERT INTO medicine_log (id, medicine_type_id, datetime, value, user_id) VALUES (?, ?, ?, ?, ?)", (log_id, medicine_type_id, log_datetime, change_in_stock, authorisedUserId))
+        db.commit()
+        # Update current stock
+        cursor.execute("UPDATE medicine_stock set value=? where medicine_type_id=?", (int(new_stock), medicine_type_id))
+        db.commit()
+        return
+    
+    except Exception as e:
+        print(e)
+        return e
 
 
 def write_sensor_log(sensor_type_id, datetime, value):
@@ -70,7 +96,7 @@ def get_user(id):
     try:
         db = create_connection()
         cursor = db.cursor()
-        cursor.execute("SELECT name, photo_path FROM users WHERE user_id = ?", (id,))
+        cursor.execute("SELECT name, photo_path, user_id FROM users WHERE user_id = ?", (id,))
         data = cursor.fetchall()
         return data
     except Exception as e:

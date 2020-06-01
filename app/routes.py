@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, jsonify
 from app import app
 from app.database import get_sensors, get_medicine_stock, write_sensor_log, get_user, get_users, write_users, \
-    write_user_encoding, get_user_encodings
+    write_user_encoding, get_user_encodings, update_medicine_log
 from app.forms import newUserForm
 from werkzeug.utils import secure_filename
 import face_recognition
@@ -14,12 +14,19 @@ fridge_port_number = None
 
 
 @app.route('/')
-def index():
+def index(authorisedUser=False, authorisedUserId=False, photo=False):
     data = get_medicine_stock()
     medicine_dict = {}
+    print(authorisedUser, authorisedUserId, photo)
+    if authorisedUser and authorisedUserId and photo:
+        fridge_border="4px solid green"
+    else:
+        fridge_border="4px solid orangered"
+
     for medicine in data:
         medicine_dict[medicine[4]] = int(medicine[2])
-    return render_template('index.html', medicine_stock_data=data, medicine_dict=medicine_dict, fridge_border="4px solid orangered")
+    return render_template('index.html', medicine_stock_data=data, medicine_dict=medicine_dict, fridge_border=fridge_border,
+        authorisedUser=authorisedUser, authorisedUserId=authorisedUserId, photo=photo)
 
 
 @app.route('/report')
@@ -69,10 +76,6 @@ def newClient():
 
 @app.route('/auth')
 def triggerAuth():
-    data = get_medicine_stock()
-    medicine_dict = {}
-    for medicine in data:
-        medicine_dict[medicine[4]] = int(medicine[2])
     try:
         global fridge_port_number
         url = 'http://127.0.0.1:' + str(fridge_port_number)
@@ -83,19 +86,16 @@ def triggerAuth():
         encoding = response_dict["encoding"]
         knownEncodings = get_user_encodings()
         authorisedUser = checkForMatch(encoding, knownEncodings)
-
         if authorisedUser is None:
-            return render_template('index.html', medicine_stock_data=data, medicine_dict=medicine_dict,
-                                   authorisedUser=None, fridge_border="4px solid orangered")
+            return index(authorisedUser=None)
 
         # get the name and the file path of the user's photo
         authorisedUser = get_user(authorisedUser)
-        return render_template('index.html', medicine_stock_data=data, medicine_dict=medicine_dict,
-                               authorisedUser=authorisedUser[0][0], photo=authorisedUser[0][1],
-                               fridge_border="4px solid green")
+        return index(authorisedUser=authorisedUser[0][0], authorisedUserId=[0][2], photo=authorisedUser[0][1])
+    
     except Exception as error:
-        return render_template('index.html', medicine_stock_data=data, medicine_dict=medicine_dict,
-                               authorisedUser=None, fridge_border="4px solid orangered")
+        # return index(authorisedUser="Me", authorisedUserId="13", photo="IMG_1909.jpg") # Used for testing without face_recognition
+        return index(authorisedUser=None)
 
 
 # This route should provide all the administrative information and transactions
@@ -116,6 +116,15 @@ def userAdmin():
         form = newUserForm()
     data = get_users()
     return render_template('admin.html', form=form, data=data)
+
+
+@app.route('/update_medicine_stock/<authorisedUserId>', methods=['POST'])
+def update_medicine_stock(authorisedUserId):  # Our main search page interface
+    if request.method == 'POST':
+        values = request.form.to_dict()
+        for medicine in values:
+            update_medicine_log(authorisedUserId, medicine, values[medicine])
+        return index()
 
 
 @app.errorhandler(404)
