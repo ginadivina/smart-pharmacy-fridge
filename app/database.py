@@ -66,12 +66,12 @@ def update_medicine_log(authorisedUserId, medicine_type_id, new_stock):
         change_in_stock = int(new_stock) - int(current_stock[0][0])
         if change_in_stock == 0:
             return
-            
+
         # Add a new medicine_log entry
         cursor.execute("INSERT INTO medicine_log (id, medicine_type_id, datetime, value, user_id) VALUES (?, ?, ?, ?, ?)", (log_id, medicine_type_id, log_datetime, change_in_stock, authorisedUserId))
         db.commit()
         # Update current stock
-        cursor.execute("UPDATE medicine_stock set value=? where medicine_type_id=?", (int(new_stock), medicine_type_id))
+        cursor.execute("UPDATE medicine_stock set value=? WHERE medicine_type_id=?", (int(new_stock), medicine_type_id))
         db.commit()
         return
     
@@ -92,6 +92,33 @@ def write_sensor_log(sensor_type_id, datetime, value):
         print(e)
         return e
 
+def unlock_door(authorisedUserId):
+    try:
+        log_id = str(uuid.uuid4())
+        log_datetime = datetime.datetime.now()
+        db = create_connection()
+        cursor = db.cursor()
+        cursor.execute("INSERT INTO authorised_access_log (id, user_id, datetime_unlocked) VALUES (?, ?, ?)", (log_id, authorisedUserId, log_datetime))
+        db.commit()
+        return log_id    
+
+    except Exception as e:
+        print(e)
+        return e
+
+def lock_door(access_id):
+    try:
+        log_datetime = datetime.datetime.now()
+        db = create_connection()
+        cursor = db.cursor()
+        cursor.execute("UPDATE authorised_access_log set datetime_locked=? WHERE id=?", (log_datetime, access_id))
+        db.commit()
+        return cursor.lastrowid       
+
+    except Exception as e:
+        print(e)
+        return e
+
 def get_user(id):
     try:
         db = create_connection()
@@ -102,6 +129,7 @@ def get_user(id):
     except Exception as e:
         print(e)
         return e
+
 
 def get_users():
     try:

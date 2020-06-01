@@ -38,7 +38,7 @@
                         <tbody>
 
                             {% if authorisedUser %}
-                                <form action="{{ url_for('update_medicine_stock', authorisedUserId=authorisedUserId) }}" method="post" role="form">
+                                <form action="{{ url_for('update_medicine_stock', authorisedUserId=authorisedUserId, access_id=access_id) }}" method="post" role="form">
                                     {% for medicine in medicine_stock_data %}
                                         <tr>
                                             <td><input type="text" class="form-control" readonly="true" value={{medicine[4]}}></td>

@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, jsonify
 from app import app
 from app.database import get_sensors, get_medicine_stock, write_sensor_log, get_user, get_users, write_users, \
-    write_user_encoding, get_user_encodings, update_medicine_log
+    write_user_encoding, get_user_encodings, update_medicine_log, unlock_door, lock_door
 from app.forms import newUserForm
 from werkzeug.utils import secure_filename
 import face_recognition
@@ -14,7 +14,7 @@ fridge_port_number = None
 
 
 @app.route('/')
-def index(authorisedUser=False, authorisedUserId=False, photo=False):
+def index(authorisedUser=False, authorisedUserId=False, photo=False, access_id=False):
     data = get_medicine_stock()
     medicine_dict = {}
     print(authorisedUser, authorisedUserId, photo)
@@ -26,7 +26,7 @@ def index(authorisedUser=False, authorisedUserId=False, photo=False):
     for medicine in data:
         medicine_dict[medicine[4]] = int(medicine[2])
     return render_template('index.html', medicine_stock_data=data, medicine_dict=medicine_dict, fridge_border=fridge_border,
-        authorisedUser=authorisedUser, authorisedUserId=authorisedUserId, photo=photo)
+        authorisedUser=authorisedUser, authorisedUserId=authorisedUserId, photo=photo, access_id=access_id)
 
 
 @app.route('/report')
@@ -91,10 +91,13 @@ def triggerAuth():
 
         # get the name and the file path of the user's photo
         authorisedUser = get_user(authorisedUser)
-        return index(authorisedUser=authorisedUser[0][0], authorisedUserId=[0][2], photo=authorisedUser[0][1])
+        # log the access
+        access_id = unlock_door(authorisedUser[0][2])
+        return index(authorisedUser=authorisedUser[0][0], authorisedUserId=authorisedUser[0][2], photo=authorisedUser[0][1], access_id=access_id)
     
     except Exception as error:
-        # return index(authorisedUser="Me", authorisedUserId="13", photo="IMG_1909.jpg") # Used for testing without face_recognition
+        # access_id = unlock_door("13")
+        # return index(authorisedUser="Tristan", authorisedUserId="13", photo="IMG_1909.jpg", access_id=access_id) # Used for testing without face_recognition
         return index(authorisedUser=None)
 
 
@@ -118,12 +121,14 @@ def userAdmin():
     return render_template('admin.html', form=form, data=data)
 
 
-@app.route('/update_medicine_stock/<authorisedUserId>', methods=['POST'])
-def update_medicine_stock(authorisedUserId):  # Our main search page interface
+@app.route('/update_medicine_stock/<authorisedUserId>/<access_id>', methods=['POST'])
+def update_medicine_stock(authorisedUserId, access_id):  # Our main search page interface
     if request.method == 'POST':
         values = request.form.to_dict()
         for medicine in values:
             update_medicine_log(authorisedUserId, medicine, values[medicine])
+        # Lock the door and log it
+        lock_door(access_id)
         return index()
 
 
