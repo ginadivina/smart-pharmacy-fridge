@@ -14,21 +14,61 @@ def report():
     tempData = data['Temperature']
     lowTempList = []
     highTempList = []
+    pressureData = data['Pressure']
+    lowPressList = []
+    highPressList = []
+    humidData = data['Humidity']
+    lowHumList = []
+    highHumList = []
+
+    print(tempData)
  
     i = 0
-    for x in tempData:
-        if tempData[i][3] == "20":  #placeholder temperature for testing, change to: if tempData[i][3] < "2":
+    minuteCounter = 0
+    while i < len(tempData)-1: # x in tempData
+        if tempData[i][3] < "2":
             lowTempList.append(data['Temperature'][i])
             i = i + 1
-        elif tempData[i][3] == "20.1":  #placeholder temperature for testing, change to: if tempData[i][3] > "8":
+            if minuteCounter <= 15:
+                minuteCounter = 0
+                highTempList.clear()
+        elif tempData[i][3] >= "8" and tempData[i+1][3] >= "8":
+            minuteCounter = minuteCounter + 1
             highTempList.append(data['Temperature'][i])
             i = i + 1
         else:
             i = i + 1
             #No temperature discrepancies
+            if minuteCounter <= 15:
+                minuteCounter = 0
+                highTempList.clear()
 
-    tempDict = {'Low Temperature Alerts': lowTempList, 'High Temperature Alerts': highTempList}
-    return render_template('report.html', sensor_data=tempDict)
+    i = 0
+    while i < len(humidData)-1:
+        if humidData[i][3] > "60":
+            highHumList.append(data['Humidity'][i])
+            i = i + 1
+        elif humidData[i][3] < "0":
+            lowHumList.append(data['Humidity'][i])
+            i = i + 1
+        else:
+            i = i + 1
+
+    i = 0
+    while i < len(pressureData)-1:
+        if int(pressureData[i][3]) > 1080:
+            highPressList.append(data['Pressure'][i])
+            i = i + 1
+        elif int(pressureData[i][3]) < 500:
+            lowPressList.append(data['Pressure'][i])
+            i = i + 1
+        else:
+            i = i + 1
+
+    completeDict = {'Low Temperature Alerts': lowTempList, 'High Temperature Alerts': highTempList,
+        'Low Humidity Alerts': lowHumList, 'High Humidity Alerts': highHumList,
+        'Low Pressure Alerts': lowPressList, 'High Pressure Alerts': highPressList}
+    return render_template('report.html', sensor_data=completeDict)
 
 @app.route('/sensors')
 def sensors():
