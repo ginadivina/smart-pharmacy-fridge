@@ -3,25 +3,66 @@
 {% block content %}
 <div class="container">
     {% for sensor in sensor_data %}
-    <div class="table-responsive">
-        <table class="table">
-            <h2>{{sensor}} logs</h2>
-            <thead>
-                <tr>
-                    <th scope="col">Date Logged</th>
-                    <th scope="col">Value Logged</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for reading in sensor_data[sensor] %}
+    <div class="row">
+        <h2>{{sensor}} logs</h2>
+        <div class="col-md-8">
+            <canvas id={{sensor | tojson}}></canvas>
+            <!--suppress JSUnresolvedLibraryURL -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+            <!--suppress JSUnresolvedLibraryURL -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+            <script>
+                // Create a chart for each sensor
+                sensor_json = {{sensor | tojson}}
+                sensor_data_json = ({{sensor_data[sensor] | tojson}})
+                context = document.getElementById(sensor_json).getContext('2d');
+                labels = [];
+                for (i = 0; i < sensor_data_json.length; i++) {
+                    date = new Date(sensor_data_json[i][2]);
+                    labels.push(date.toLocaleString())  // Make our date more human readable
+                }
+                data = [];
+                for (i = 0; i < sensor_data_json.length; i++) {
+                    data.push(sensor_data_json[i][3])
+                }
+                new Chart(context, {
+                    // The type of chart we want to create
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Value Logged',
+                            backgroundColor: '#e95809',
+                            borderColor: '#c54d09',
+                            data: data
+                        }]
+                    },
+                    // Configuration options go here
+                    options: {}
+                });
+            </script>
+        </div>
+        <div class="tableFixHead col-md-4">
+            <table class="table table-hover">
+                <thead>
                     <tr>
-                        <td>{{reading[2]}}</td>
-                        <td>{{reading[3]}}</td>
+                        <th scope="col" style="background-color: white;">Date Logged</th>
+                        <th scope="col" style="background-color: white;">Value Logged</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for reading in sensor_data[sensor] %}
+                        <tr>
+                            <td>{{reading[2]}}</td>
+                            <td>{{reading[3]}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
     {% endfor %}
 </div>
+
+
 {% endblock %}
