@@ -176,3 +176,30 @@ def get_user_encodings():
     except Exception as e:
         print(e)
         return e
+
+def get_max_temp():
+    try:
+        db = create_connection()
+        cursor = db.cursor()
+        cursor.execute("SELECT MAX(value) FROM sensor_log WHERE DATE(datetime) = date('2020-04-05') AND sensor_type_id = '0'")
+        data = cursor.fetchall()  # Retrieve all results
+
+        return data
+    
+    except Exception as e:
+        print(e)
+        return e
+
+def get_min_temp():
+    try:
+        db = create_connection()
+        cursor = db.cursor()
+        cursor.execute("SELECT MIN(value) FROM sensor_log WHERE DATE(datetime) = date('2020-04-05') AND sensor_type_id = '0'")
+        data = cursor.fetchall()  # Retrieve all results
+
+        return data
+    
+    except Exception as e:
+        print(e)
+        return e
+   
