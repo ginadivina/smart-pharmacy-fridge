@@ -71,6 +71,8 @@ def triggerAuth():
     #See if it would be possible to redirect to a processing page during this time
     response = requests.post(url, data="login", headers=headers)
     response_dict = json.loads(response.text)
+
+    #compare the face received with the faces we know
     encoding = response_dict["encoding"]
     knownEncodings = get_user_encodings()
     authorisedUser = checkForMatch(encoding, knownEncodings)
