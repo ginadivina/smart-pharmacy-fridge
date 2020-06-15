@@ -118,7 +118,7 @@ def captureVideo(video_capture):
             if consecutivelyFound >=5:
                 encodedFace = face_encoding
                 authorised = True
-                #video_capture.release()
+                video_capture.release()
                 continue
             cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
             font = cv2.FONT_HERSHEY_DUPLEX

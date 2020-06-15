@@ -2,7 +2,7 @@
 
 {% set navigation_bar = [
 ('/', 'index', 'Home'),
-('/sensors', 'sensors', 'Logging'),
+('/dashboard', 'dashboard', 'Dashboard'),
 ('/report', 'report', 'Reporting'),
 ('/admin', 'userAdmin', 'Administration')
 ] -%}
@@ -24,7 +24,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="{{ url_for('index') }}" style = "color : #e95809;" class="d-inline-block align-top">
-                <img src="./static/fridge.svg" style="width:4vh; height:4vh">
+                <img src="{{ url_for('static', filename='fridge.svg') }}" style="width:4vh; height:4vh">
             </a>
             <a class="navbar-brand" href="{{ url_for('index') }}" style = "color : #e95809; font-size:40px" class="d-inline-block align-top">
                 Smart Pharmacy Fridge
@@ -52,63 +52,4 @@
 </nav>
 {% endblock %}
 
-{% block content %}
-<a class="btn btn-success" href="{{ url_for('triggerAuth') }}" role="button">Unlock fridge</a>
 
-{% if authorisedUser %}
-<h1>Fridged opened by {{ authorisedUser }}</h1>
-<img src="static/user_photos/{{ photo }}" style="position: absolute; left: 200px; top: 20px; width: 60px; height: 130px;">
-{% if authorisedUser == "None" %}
-<h1>Unsuccessful Login attempt detected</h1>
-{% endif %}
-{% endif %}
-<div class="panel panel-default" style="position: relative; left: 5vw; top: 2vh; width: 80%;">
-    <div class="panel-body">
-        <h3 style="font-weight: 700; color: orangered">Live View</h3>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="table-responsive">
-                    <table class="table">
-                        <h2>Current Medicine Stock</h2>
-                        <thead>
-                        <tr>
-                            <th scope="col">Medicine</th>
-                            <th scope="col"># In Stock</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for medicine in medicine_stock_data %}
-                            <tr>
-                                <td>{{medicine[4]}}</td>
-                                <td>{{medicine[2]}}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <img src="static/live_fridge.PNG" style="position: relative; left: 0; top: 0;">
-                {% if medicine_dict['Amoxicillin'] and medicine_dict['Amoxicillin'] > 0 %}
-                    <img src="static/Amoxicillin.PNG" style="position: absolute; left: 30px; top: 50px; width: 150px; height: 100px;">
-                {% endif %}
-                {% if medicine_dict['Humiera'] and medicine_dict['Humiera'] > 0 %}
-                    <img src="static/humira.PNG" style="position: absolute; left: 200px; top: 20px; width: 60px; height: 130px;">
-                {% endif %}
-                {% if medicine_dict['Atgam'] and medicine_dict['Atgam'] > 0 %}
-                    <img src="static/atgam.PNG" style="position: absolute; left: 300px; top: 50px; width: 150px; height: 100px;">
-                {% endif %}
-                {% if medicine_dict['Azasite'] and medicine_dict['Azasite'] > 0 %}
-                    <img src="static/azasite.PNG" style="position: absolute; left: 470px; top: 50px; width: 65px; height: 100px;">
-                {% endif %}
-                {% if medicine_dict['Benzamycin'] and medicine_dict['Benzamycin'] > 0 %}
-                    <img src="static/Benzamycin.PNG" style="position: absolute; left: 60px; top: 240px; width: 70px; height: 100px;">
-                {% endif %}
-                {% if medicine_dict['Emcyt'] and medicine_dict['Emcyt'] > 0 %}
-                <img src="static/emcyt.PNG" style="position: absolute; left: 150px; top: 240px; width: 150px; height: 80px;">
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
