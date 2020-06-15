@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, jsonify
 from app import app
 from app.database import get_sensors, get_medicine_stock, write_sensor_log, get_user, get_users, write_users, \
-    write_user_encoding, get_user_encodings, update_medicine_log, unlock_door, lock_door
+    write_user_encoding, get_user_encodings, update_medicine_log, unlock_door, lock_door, get_monthly_temp
 from app.forms import newUserForm
 from werkzeug.utils import secure_filename
 import face_recognition
@@ -45,6 +45,11 @@ def report():
     temp_dict = {'Low Temperature Alerts': low_temp_list, 'High Temperature Alerts': high_temp_list}
     return render_template('report.html', sensor_data=temp_dict)
 
+@app.route('/monthlyreport')
+def mintemp():
+    data = get_monthly_temp(2020, 5)
+
+    return render_template('monthlyreport.html', sensor_data=data)
 
 @app.route('/dashboard')
 def dashboard():

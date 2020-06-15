@@ -177,29 +177,57 @@ def get_user_encodings():
         print(e)
         return e
 
-def get_max_temp():
+def get_max_temp(datevalue):
     try:
         db = create_connection()
         cursor = db.cursor()
-        cursor.execute("SELECT MAX(value) FROM sensor_log WHERE DATE(datetime) = date('2020-04-05') AND sensor_type_id = '0'")
+        cursor.execute("SELECT MAX(value) FROM sensor_log WHERE DATE(datetime) = date(?) AND sensor_type_id = '0'", (datevalue,))
         data = cursor.fetchall()  # Retrieve all results
-
         return data
-    
     except Exception as e:
         print(e)
         return e
 
-def get_min_temp():
+def get_min_temp(datevalue):
     try:
         db = create_connection()
         cursor = db.cursor()
-        cursor.execute("SELECT MIN(value) FROM sensor_log WHERE DATE(datetime) = date('2020-04-05') AND sensor_type_id = '0'")
+        cursor.execute("SELECT MIN(value) FROM sensor_log WHERE DATE(datetime) = date(?) AND sensor_type_id = '0'", (datevalue,))
         data = cursor.fetchall()  # Retrieve all results
-
         return data
-    
     except Exception as e:
         print(e)
         return e
    
+def get_minmax_temp(datevalue):
+        minvalue = get_min_temp(datevalue)
+        maxvalue = get_max_temp(datevalue)
+
+        data = {}
+
+        data[0] = datevalue
+        data[1] = minvalue
+        data[2] = maxvalue
+
+
+        return data
+
+def get_monthly_temp(year, month):
+
+        firstdate = datetime.date(year, month, 1)
+        lastday = calendar.monthrange(year, month)[1]
+
+        data = {}
+
+        seconddate = firstdate.replace(day=lastday)
+
+        delta = datetime.timedelta(days=1)
+
+        i = 0
+
+        while firstdate <= seconddate:
+            data[i] = get_minmax_temp(firstdate)
+            firstdate += delta
+            i = i + 1
+
+        return data
